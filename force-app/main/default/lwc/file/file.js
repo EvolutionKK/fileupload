@@ -7,6 +7,7 @@ import sendmail from '@salesforce/apex/oppfile.sendmail';
 
 export default class File extends NavigationMixin(LightningElement) {
 
+    ext;
     actions = [
         { label: 'Preview', name: 'preview' },
         { label: 'Download', name: 'download' },
@@ -14,7 +15,10 @@ export default class File extends NavigationMixin(LightningElement) {
         { label: 'Delete', name: 'delete' },
     ];
     columns = [
-        { label: 'Icons', fieldName: 'Id', type: 'text' },
+        { label: 'Icons', 
+        fieldName: ' ',
+        cellAttributes: { iconName: {fieldName: 'FileType'}
+        }}  ,
         { label: 'Title', fieldName: 'Title', type: 'text ' },
         {
             type: 'action',
@@ -25,12 +29,11 @@ export default class File extends NavigationMixin(LightningElement) {
     show = false;
     @wire(fnoppfile) oplist;
     notelist = [];
-    acceptedFormats = ['.pdf', '.png', '.jpg'];
+    acceptedFormats = ['.pdf', '.png', '.jpg', 'csv', 'txt', 'excel'];
     @api myRecordId;
     openModal  = false;
     mail = '';
     mailId = '';
-
 
     handleclicked(event) {
         let opid = event.target.dataset.id;
@@ -43,6 +46,21 @@ export default class File extends NavigationMixin(LightningElement) {
             this.show1 = false;
             this.show = true;
             this.notelist = result;
+             this.notelist.map(elem=>{
+                if(elem.FileExtension == 'jpg')
+                    {
+                        elem.FileType = 'doctype:image';
+                    }else if(elem.FileExtension == 'pdf')
+                    {
+                        elem.FileType = 'doctype:pdf';
+                    }else if(elem.FileExtension == 'txt')
+                    {
+                        elem.FileType = 'doctype:txt';
+                    }else if(elem.FileExtension == 'csv')
+                    {
+                        elem.FileType = 'doctype:csv';
+                    }
+             })
         }).catch(err => {
             console.log(err);
         })
@@ -53,6 +71,21 @@ export default class File extends NavigationMixin(LightningElement) {
             recordId : this.myRecordId
         }).then(res=>{
             this.notelist = res;
+            this.notelist.map(elem=>{
+                if(elem.FileExtension == 'jpg')
+                    {
+                        elem.FileType = 'doctype:image';
+                    }else if(elem.FileExtension == 'pdf')
+                    {
+                        elem.FileType = 'doctype:pdf';
+                    }else if(elem.FileExtension == 'txt')
+                    {
+                        elem.FileType = 'doctype:txt';
+                    }else if(elem.FileExtension == 'csv')
+                    {
+                        elem.FileType = 'doctype:csv';
+                    }
+             })
         })
     }
 
@@ -69,6 +102,21 @@ export default class File extends NavigationMixin(LightningElement) {
                     recordId : this.myRecordId
                 }).then(res=>{
                     this.notelist = res;
+                    this.notelist.map(elem=>{
+                        if(elem.FileExtension == 'jpg')
+                            {
+                                elem.FileType = 'doctype:image';
+                            }else if(elem.FileExtension == 'pdf')
+                            {
+                                elem.FileType = 'doctype:pdf';
+                            }else if(elem.FileExtension == 'txt')
+                            {
+                                elem.FileType = 'doctype:txt';
+                            }else if(elem.FileExtension == 'csv')
+                            {
+                                elem.FileType = 'doctype:csv';
+                            }
+                     })
                 });
             }).catch(err=>{
                 console.log(err);
