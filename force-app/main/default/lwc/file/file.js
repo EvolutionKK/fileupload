@@ -29,7 +29,7 @@ export default class File extends NavigationMixin(LightningElement) {
     show = false;
     @wire(fnoppfile) oplist;
     notelist = [];
-    acceptedFormats = ['.pdf', '.png', '.jpg', 'csv', 'txt', 'excel'];
+    // acceptedFormats = ['.pdf', '.png', '.jpg', 'csv', 'txt', 'excel'];
     @api myRecordId;
     openModal  = false;
     mail = '';
