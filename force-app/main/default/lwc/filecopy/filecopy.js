@@ -7,7 +7,7 @@ import { NavigationMixin } from 'lightning/navigation';
 //import sendmail from '@salesforce/apex/oppfile.sendmail';
 import updatecontent from '@salesforce/apex/oppfile.updatecontent';
 
-export default class File extends NavigationMixin(LightningElement) {
+export default class Filecopy extends NavigationMixin(LightningElement) {
 
     ext;
     // actions = [
@@ -41,15 +41,36 @@ export default class File extends NavigationMixin(LightningElement) {
     mailId = '';
     openfileupload = false;
     category;
-    check;
-    selected;
-    take;
+    check='All';
+    selected='All';
+    take=false;
     filsel;
     filval;
+    ar20 = [{}];
+    ar21 = [{}];
+    ar22 = [{}];
+    years = [
+        {
+            year : 2020,
+            arr : this.ar20
+        },
+        {
+            year : 2021,
+            arr : this.ar21
+        },
+        {
+            year : 2022,
+            arr : this.ar22
+        }
+    ]
+    activeSectionMessage = '';
 
+    handleToggleSection(event) {
+        this.activeSectionMessage =
+            'Open section name:  ' + event.detail.openSections;
+    }
 
     handleclicked(event) {
-        // console.log(JSON.parse(JSON.stringify(event)));
         let opid = event.target.dataset.id;
         console.log(opid);
         this.myRecordId = event.target.dataset.id;
@@ -60,6 +81,15 @@ export default class File extends NavigationMixin(LightningElement) {
             this.show1 = false;
             this.show = true;
             this.notelist = result;
+            this.notelist.forEach(elem=>{
+                if(elem.evolution__getyear__c == 2020){
+                    this.ar20.push(elem);
+                }else if(elem.evolution__getyear__c == 2021){
+                    this.ar21.push(elem);
+                }else if(elem.evolution__getyear__c == 2022){
+                    this.ar22.push(elem);
+                }
+            })
             this.notelist.map(elem => {
                 if (elem.evolution__isValid__c == true) {
                     elem.evolution__Action__c = [
@@ -90,16 +120,21 @@ export default class File extends NavigationMixin(LightningElement) {
         console.log(event.target.value);
         this.category = event.target.value;
     }
-    selfilter(event) {
-
+    contentname(event) {
+        var docname = event.target.value;
     }
 
     handleUploadFinished(event) {
         getContentDetails({
             recordId: this.myRecordId
         }).then(res => {
-            this.take = this.template.querySelector('.isvalo');
-            console.log(this.take.checked);
+            // this.take = this.template.querySelector('.isvalo');
+            if(this.template.querySelector('.isvalo').checked != null){
+                this.take = this.template.querySelector('.isvalo').checked;
+            }else{
+
+            }
+
             if (this.take.checked == true) {
                 var decide = true;
                 res[0].evolution__isValid__c = true;
@@ -188,11 +223,11 @@ export default class File extends NavigationMixin(LightningElement) {
     }
 
 
-    download(file) {
+    download(event) {
         this[NavigationMixin.Navigate]({
             type: 'standard__webPage',
             attributes: {
-                url: 'https://cyntexa-4a2-dev-ed.lightning.force.com/sfc/servlet.shepherd/document/download/' + file.ContentDocumentId
+                url: 'https://cyntexa-4a2-dev-ed.lightning.force.com/sfc/servlet.shepherd/document/download/' + event.target.dataset.name
             }
         }
         );
@@ -200,28 +235,18 @@ export default class File extends NavigationMixin(LightningElement) {
     closeModal() {
         this.openModal = false;
     }
-    // closeModalandsubmit()
-    // {
-    //     this.mail = this.template.querySelector('[data-id="mail"]').value;
-    //     this.openModal = false;
-    //     let body = '/sfc/servlet.shepherd/document/download/'+this.mailId;
-    //     sendmail({email: this.mail, body : body}).then(res=>{
-    //         alert('mail sent');
-    //     }).catch(err=>{
-    //         console.log(err);
-    //     })
-    // }
-    previewFile(file) {
-        console.log('work1');
+
+    previewfile(event){
+        console.log(event.target.dataset.name);
         this[NavigationMixin.Navigate]({
-            type: 'standard__namedPage',
-            attributes: {
-                pageName: 'filePreview'
-            },
-            state: {
-                recordIds: file.ContentDocumentId
-            }
-        })
+                    type: 'standard__namedPage',
+                    attributes: {
+                        pageName: 'filePreview'
+                    },
+                    state: {
+                        recordIds: event.target.dataset.name
+                    }
+                })
     }
     openfile() {
         this.openfileupload = true;
